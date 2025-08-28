@@ -118,7 +118,7 @@ myapp/
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
 Этот чарт распространяется по лицензии **Apache License 2.0**. См. файл [`LICENSE`](./LICENSE).  
-Оригинальный репозиторий: **https://github.com/SterhLight/<your-repo>** _(замени на фактический URL)._
+Оригинальный репозиторий: **https://github.com/SterhLight/helm-template**
 
 © 2025 SterhLight Inc. av.popytaev (krasava)
 

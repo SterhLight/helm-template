@@ -1,0 +1,177 @@
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 2
+
+# Глобальные дефолты образа (используются, если для ресурса не указано своё)
+image:
+  repository: nginx
+  tag: "1.27"
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# Пер-ресурсные переопределения образов
+deployment:
+  # repository/tag/pullPolicy (иначе берется global image)
+  image: {}
+  tag: {}
+  pullPolicy: {}
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  automount: true
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  annotations: {}
+  labels: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: null
+
+livenessProbe:
+  enabled: false
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  enabled: false
+  httpGet:
+    path: /ready
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+startupProbe:
+  enabled: false
+  httpGet:
+    path: /startup
+    port: http
+  failureThreshold: 30
+  periodSeconds: 10
+
+env: []
+envFrom: []
+
+config:
+  enabled: false
+  data: {}
+
+secrets:
+  enabled: false
+  stringData: {}
+
+persistence:
+  enabled: false
+  existingClaim: ""
+  storageClass: ""
+  accessModes: [ "ReadWriteOnce" ]
+  size: 1Gi
+  mountPath: /data
+  annotations: {}
+
+extraVolumes: []
+extraVolumeMounts: []
+extraContainers: []
+extraInitContainers: []
+
+affinity: {}
+nodeSelector: {}
+tolerations: []
+
+enablePDB: false
+pdb:
+  minAvailable: 1
+
+networkPolicy:
+  enabled: false
+  podSelector: {}
+  ingress:
+    - {}
+  egress:
+    - {}
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+  labels: {}
+  annotations: {}
+  path: /metrics
+  portName: http
+
+job:
+  enabled: false
+  name: ""
+  # repository/tag/pullPolicy (иначе берется global image)
+  image: {}
+  tag: {}
+  pullPolicy: {}
+  backoffLimit: 3
+  ttlSecondsAfterFinished: null
+  restartPolicy: Never
+  command: []
+  args: []
+  env: []
+  envFrom: []
+  resources: {}
+  annotations: {}
+  labels: {}
+  extraVolumeMounts: []
+  extraVolumes: []
+
+cronjob:
+  enabled: false
+  name: ""
+  # repository/tag/pullPolicy (иначе берется global image)
+  image: {}
+  tag: {}
+  pullPolicy: {}
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  startingDeadlineSeconds: null
+  suspend: false
+  jobTemplate:
+    backoffLimit: 3
+    restartPolicy: OnFailure
+    command: []
+    args: []
+    env: []
+    envFrom: []
+    resources: {}
+    annotations: {}
+    labels: {}
+    extraVolumeMounts: []
+    extraVolumes: []

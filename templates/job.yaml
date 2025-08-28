@@ -1,0 +1,47 @@
+{{- if .Values.job.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.fullname" . }}{{- if .Values.job.name }}-{{ .Values.job.name }}{{- end }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    {{- toYaml .Values.job.labels | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.job.annotations | nindent 4 }}
+spec:
+  {{- if .Values.job.ttlSecondsAfterFinished }}
+  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+  {{- end }}
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "app.fullname" . }}
+      restartPolicy: {{ .Values.job.restartPolicy }}
+      containers:
+        - name: {{ include "app.name" . }}-job
+          image: "{{ coalesce .Values.job.image.repository .Values.image.repository }}:{{ coalesce .Values.job.image.tag .Values.image.tag }}"
+          imagePullPolicy: {{ coalesce .Values.job.image.pullPolicy .Values.image.pullPolicy }}
+          {{- if .Values.job.command }}
+          command: {{ toYaml .Values.job.command | nindent 10 }}
+          {{- end }}
+          {{- if .Values.job.args }}
+          args: {{ toYaml .Values.job.args | nindent 10 }}
+          {{- end }}
+          env:
+            {{- toYaml .Values.job.env | nindent 12 }}
+          {{- if .Values.job.envFrom }}
+          envFrom:
+            {{- toYaml .Values.job.envFrom | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.job.resources | nindent 12 }}
+          volumeMounts:
+            {{- toYaml .Values.job.extraVolumeMounts | nindent 12 }}
+      volumes:
+        {{- toYaml .Values.job.extraVolumes | nindent 8 }}
+{{- end }}

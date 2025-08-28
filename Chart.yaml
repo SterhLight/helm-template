@@ -1,0 +1,6 @@
+apiVersion: v2
+name: myapp
+description: A minimal, dependency-free Helm chart for generic apps (with Job & CronJob, per-resource image overrides)
+type: application
+version: 0.1.1
+appVersion: "1.0.0"

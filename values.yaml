@@ -135,7 +135,6 @@ job:
   name: ""
   # repository/tag/pullPolicy (иначе берется global image)
   image: {}
-  tag: {}
   pullPolicy: {}
   backoffLimit: 3
   ttlSecondsAfterFinished: null
@@ -155,7 +154,6 @@ cronjob:
   name: ""
   # repository/tag/pullPolicy (иначе берется global image)
   image: {}
-  tag: {}
   pullPolicy: {}
   schedule: "*/5 * * * *"
   concurrencyPolicy: Forbid

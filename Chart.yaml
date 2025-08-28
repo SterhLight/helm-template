@@ -1,6 +1,11 @@
 apiVersion: v2
 name: myapp
-description: A minimal, dependency-free Helm chart for generic apps (with Job & CronJob, per-resource image overrides)
+description: A minimal, dependency-free Helm chart for generic apps
 type: application
 version: 0.1.1
 appVersion: "1.0.0"
+annotations:
+  license: Apache-2.0
+maintainers:
+  - name: SterhLight Inc. av.popytaev (krasava)
+    url: https://github.com/SterhLight/helm-template

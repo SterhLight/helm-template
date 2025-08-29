@@ -5,43 +5,59 @@ metadata:
   name: {{ include "app.fullname" . }}{{- if .Values.job.name }}-{{ .Values.job.name }}{{- end }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
-    {{- toYaml .Values.job.labels | nindent 4 }}
+    {{- with .Values.job.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.job.annotations }}
   annotations:
-    {{- toYaml .Values.job.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  {{- if .Values.job.ttlSecondsAfterFinished }}
-  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+  {{- with .Values.job.ttlSecondsAfterFinished }}
+  ttlSecondsAfterFinished: {{ . }}
   {{- end }}
   backoffLimit: {{ .Values.job.backoffLimit }}
   template:
     metadata:
       labels:
         {{- include "app.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
-      serviceAccountName: {{ include "app.fullname" . }}
+      serviceAccountName: {{ include "app.serviceAccountName" . }}
       restartPolicy: {{ .Values.job.restartPolicy }}
       containers:
         - name: {{ include "app.name" . }}-job
           image: "{{ coalesce .Values.job.image.repository .Values.image.repository }}:{{ coalesce .Values.job.image.tag .Values.image.tag }}"
           imagePullPolicy: {{ coalesce .Values.job.image.pullPolicy .Values.image.pullPolicy }}
-          {{- if .Values.job.command }}
-          command: {{ toYaml .Values.job.command | nindent 10 }}
+          {{- with .Values.job.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.job.args }}
-          args: {{ toYaml .Values.job.args | nindent 10 }}
+          {{- with .Values.job.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.job.env }}
           env:
-            {{- toYaml .Values.job.env | nindent 12 }}
-          {{- if .Values.job.envFrom }}
-          envFrom:
-            {{- toYaml .Values.job.envFrom | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.job.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.job.resources }}
           resources:
-            {{- toYaml .Values.job.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.job.extraVolumeMounts }}
           volumeMounts:
-            {{- toYaml .Values.job.extraVolumeMounts | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.job.extraVolumes }}
       volumes:
-        {{- toYaml .Values.job.extraVolumes | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

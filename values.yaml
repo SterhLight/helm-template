@@ -2,25 +2,30 @@ nameOverride: ""
 fullnameOverride: ""
 
 replicaCount: 2
+revisionHistoryLimit: 3
 
-# Глобальные дефолты образа (используются, если для ресурса не указано своё)
 image:
   repository: nginx
   tag: "1.27"
   pullPolicy: IfNotPresent
   pullSecrets: []
 
-# Пер-ресурсные переопределения образов
 deployment:
-  # repository/tag/pullPolicy (иначе берется global image)
-  image: {}
-  tag: {}
-  pullPolicy: {}
+  image:
+    repository: ""
+    tag: ""
 
 serviceAccount:
+  # Создавать ли сервис-аккаунт
   create: true
+  # Имя сервис-аккаунта
+  # - если пусто и create=true → будет app.fullname
+  # - если пусто и create=false → будет default
+  # - если указано → будет именно это имя
   name: ""
+  # Аннотации (если нужны, например для IAM роли)
   annotations: {}
+  # Автоматически монтировать токен в поды
   automount: true
 
 podAnnotations: {}
@@ -112,6 +117,7 @@ tolerations: []
 enablePDB: false
 pdb:
   minAvailable: 1
+  maxUnavailable: ""
 
 networkPolicy:
   enabled: false
@@ -133,9 +139,9 @@ serviceMonitor:
 job:
   enabled: false
   name: ""
-  # repository/tag/pullPolicy (иначе берется global image)
-  image: {}
-  pullPolicy: {}
+  image:
+    repository: ""
+    tag: ""
   backoffLimit: 3
   ttlSecondsAfterFinished: null
   restartPolicy: Never
@@ -152,9 +158,9 @@ job:
 cronjob:
   enabled: false
   name: ""
-  # repository/tag/pullPolicy (иначе берется global image)
-  image: {}
-  pullPolicy: {}
+  image:
+    repository: ""
+    tag: ""
   schedule: "*/5 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3

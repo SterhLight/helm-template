@@ -5,16 +5,20 @@ metadata:
   name: {{ include "app.fullname" . }}{{- if .Values.cronjob.name }}-{{ .Values.cronjob.name }}{{- end }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
-    {{- toYaml .Values.cronjob.jobTemplate.labels | nindent 4 }}
+    {{- with .Values.cronjob.jobTemplate.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.cronjob.jobTemplate.annotations }}
   annotations:
-    {{- toYaml .Values.cronjob.jobTemplate.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   schedule: {{ .Values.cronjob.schedule | quote }}
   concurrencyPolicy: {{ .Values.cronjob.concurrencyPolicy }}
   successfulJobsHistoryLimit: {{ .Values.cronjob.successfulJobsHistoryLimit }}
   failedJobsHistoryLimit: {{ .Values.cronjob.failedJobsHistoryLimit }}
-  {{- if .Values.cronjob.startingDeadlineSeconds }}
-  startingDeadlineSeconds: {{ .Values.cronjob.startingDeadlineSeconds }}
+  {{- with .Values.cronjob.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ . }}
   {{- end }}
   suspend: {{ .Values.cronjob.suspend }}
   jobTemplate:
@@ -24,31 +28,43 @@ spec:
         metadata:
           labels:
             {{- include "app.selectorLabels" . | nindent 12 }}
+          {{- with .Values.podAnnotations }}
           annotations:
-            {{- toYaml .Values.podAnnotations | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         spec:
-          serviceAccountName: {{ include "app.fullname" . }}
+          serviceAccountName: {{ include "app.serviceAccountName" . }}
           restartPolicy: {{ .Values.cronjob.jobTemplate.restartPolicy }}
           containers:
             - name: {{ include "app.name" . }}-cron
               image: "{{ coalesce .Values.cronjob.image.repository .Values.image.repository }}:{{ coalesce .Values.cronjob.image.tag .Values.image.tag }}"
               imagePullPolicy: {{ coalesce .Values.cronjob.image.pullPolicy .Values.image.pullPolicy }}
-              {{- if .Values.cronjob.jobTemplate.command }}
-              command: {{ toYaml .Values.cronjob.jobTemplate.command | nindent 16 }}
+              {{- with .Values.cronjob.jobTemplate.command }}
+              command:
+                {{- toYaml . | nindent 16 }}
               {{- end }}
-              {{- if .Values.cronjob.jobTemplate.args }}
-              args: {{ toYaml .Values.cronjob.jobTemplate.args | nindent 16 }}
+              {{- with .Values.cronjob.jobTemplate.args }}
+              args:
+                {{- toYaml . | nindent 16 }}
               {{- end }}
+              {{- with .Values.cronjob.jobTemplate.env }}
               env:
-                {{- toYaml .Values.cronjob.jobTemplate.env | nindent 16 }}
-              {{- if .Values.cronjob.jobTemplate.envFrom }}
-              envFrom:
-                {{- toYaml .Values.cronjob.jobTemplate.envFrom | nindent 16 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
+              {{- with .Values.cronjob.jobTemplate.envFrom }}
+              envFrom:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.cronjob.jobTemplate.resources }}
               resources:
-                {{- toYaml .Values.cronjob.jobTemplate.resources | nindent 16 }}
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.cronjob.jobTemplate.extraVolumeMounts }}
               volumeMounts:
-                {{- toYaml .Values.cronjob.jobTemplate.extraVolumeMounts | nindent 16 }}
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+          {{- with .Values.cronjob.jobTemplate.extraVolumes }}
           volumes:
-            {{- toYaml .Values.cronjob.jobTemplate.extraVolumes | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}
